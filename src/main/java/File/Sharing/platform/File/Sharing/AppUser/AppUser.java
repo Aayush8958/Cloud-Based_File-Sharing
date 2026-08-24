@@ -1,26 +1,32 @@
 package File.Sharing.platform.File.Sharing.AppUser;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 
+import java.time.LocalDateTime;
 
-import java.time.LocalTime;
 
 @Entity
 @Data
 public class AppUser {
-    @NotNull(message = "Email can't be left empty")
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Id
+    Long id;
+    @NotBlank(message = "Email can't be left empty")
+    @Column(nullable = false, unique = true)
     String email;
-    @NotNull(message = "User name Cant't be left empty")
-    String UserName;
-    @NotNull(message = "Password Cant't be left empty")
-    String Password;
+    @NotNull(message = "User name can't be left empty")
+    @Column(nullable = false)
+    String userName;
+    @Column(nullable = false)
+    @NotNull(message = "Password can't be left empty")
+    String password;
+    @Enumerated(EnumType.STRING)
+    Role role;
 
-    LocalTime createTime;
+    LocalDateTime createTime;
 
 }
