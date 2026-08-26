@@ -4,7 +4,8 @@ import File.Sharing.platform.File.Sharing.AppUser.AppUser;
 import File.Sharing.platform.File.Sharing.AppUser.Role;
 import File.Sharing.platform.File.Sharing.AppUser.UserRepo;
 import File.Sharing.platform.File.Sharing.ExceptionHandling.AlreadyExisits;
-import File.Sharing.platform.File.Sharing.ExceptionHandling.userNotFound;
+import File.Sharing.platform.File.Sharing.Security.PasswordConfig;
+import File.Sharing.platform.File.Sharing.Security.PasswordConfig.*;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.security.crypto.bcrypt.BCrypt;
@@ -13,9 +14,9 @@ import org.springframework.security.crypto.bcrypt.BCrypt;
 @AllArgsConstructor
 public class authService {
  private final   UserRepo userRepo;
+private final PasswordConfig passwordConfig;
 
-
-  String register(registerRequest registerRequest) {
+ String register(registerRequest registerRequest) {
      if(userRepo.existsByEmail(registerRequest.getEmail())){
         throw new AlreadyExisits("Email already exists");
      }
@@ -25,7 +26,7 @@ public class authService {
      String username = registerRequest.getUsername();
      String password = registerRequest.getPassword();
      String email = registerRequest.getEmail();
-     String hashpw= BCrypt.hashpw(password, BCrypt.gensalt());
+     String hashpw= passwordConfig.passwordEncoder().encode(password);
      AppUser appUser=new AppUser();
      appUser.setEmail(email);
      appUser.setPassword(hashpw);
