@@ -1,6 +1,7 @@
 package File.Sharing.platform.File.Sharing.Security;
 
 import lombok.AllArgsConstructor;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -13,7 +14,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @AllArgsConstructor
 public class SecurityConfig {
 private final JwtFilter jwtFilter;
-public SecurityFilterChain securityFilterChain(HttpSecurity http){
+@Bean
+public SecurityFilterChain securityFilterChain(HttpSecurity http)throws Exception {
     http.csrf(csrf -> csrf.disable()).
             sessionManagement(session ->
                     session.

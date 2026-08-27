@@ -15,6 +15,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -41,10 +42,11 @@ private final CustomUserDetailsService customUserDetailsService;
      appUser.setPassword(hashpw);
      appUser.setUsername(username);
      appUser.setRole(Role.USER);
+     appUser.setCreateTime(LocalDateTime.now());
      userRepo.save(appUser);
      return "User created successfuly";
  }
- private authResponse login(loginRequest loginRequest) {
+ authResponse login(loginRequest loginRequest) {
   if(!userRepo.existsByEmail(loginRequest.getEmail())){
    throw new userNotFound("Email not found");
   }
