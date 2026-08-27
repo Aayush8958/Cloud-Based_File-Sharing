@@ -20,7 +20,7 @@ public class AppUser {
     String email;
     @NotNull(message = "User name can't be left empty")
     @Column(nullable = false)
-    String userName;
+    String username;
     @Column(nullable = false)
     @NotNull(message = "Password can't be left empty")
     String password;
