@@ -17,5 +17,9 @@ public class GlobalExceptionHandling {
     public ResponseEntity<String> userAlreadyExisits(AlreadyExisits alreadyExisits){
         return  new ResponseEntity<>(alreadyExisits.getMessage(), HttpStatus.BAD_REQUEST);
     }
+    @ExceptionHandler(value = {RuntimeException.class})
+    public ResponseEntity<String> StrayException(RuntimeException runtimeException){
+        return new ResponseEntity<>(runtimeException.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
 
 }
