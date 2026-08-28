@@ -5,6 +5,7 @@ import File.Sharing.platform.File.Sharing.Share.Share;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 @Entity
@@ -18,7 +19,7 @@ public class MFile {
     String Type;
     long size;
     String Path;
-    LocalTime uploadTime;
+    LocalDateTime uploadTime;
 
     @ManyToOne(fetch = FetchType.LAZY)
     AppUser appUser;
