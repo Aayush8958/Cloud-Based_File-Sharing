@@ -19,8 +19,14 @@ Todto convert;
         }
 return convert.toUserDto(userRepo.findByUsername(username));
     }
+    public AppUser getUserByEmail(String email){
+        if(!userRepo.existsByEmail(email)){
+            throw new userNotFound("Email not found");
+        }
+        return userRepo.findByEmail(email);
+    }
 
-    UserDto getUserByEmail(String email){
+   public UserDto getUserByEmailDto(String email){
         if(!userRepo.existsByEmail(email)){
             throw new userNotFound("Email not found");
         }

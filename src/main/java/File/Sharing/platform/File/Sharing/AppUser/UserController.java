@@ -22,7 +22,7 @@ public class UserController {
     }
     @GetMapping("/getByEmail")
     private ResponseEntity<UserDto> getByEmail(@RequestBody @Valid String email){
-        return new ResponseEntity<>(userService.getUserByEmail(email), HttpStatus.OK);
+        return new ResponseEntity<>(userService.getUserByEmailDto(email), HttpStatus.OK);
     }
     @DeleteMapping("/deleteByEmail")
     private ResponseEntity<String> deleteByemail(@RequestBody @Valid String email){
