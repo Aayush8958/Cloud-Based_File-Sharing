@@ -50,10 +50,10 @@ src
 ## Roadmap
 
 * [x] Project setup
-* [ ] User module
-* [ ] JWT Authentication
-* [ ] File upload
-* [ ] File download
+* [x] User module
+* [x] JWT Authentication
+* [x] File upload
+* [x] File download
 * [ ] File sharing
 * [ ] QR code generation
 * [ ] Link expiration
