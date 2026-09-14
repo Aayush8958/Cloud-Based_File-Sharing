@@ -7,6 +7,6 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
- interface FileRepo extends JpaRepository<MFile,Long> {
+public interface FileRepo extends JpaRepository<MFile,Long> {
     List<MFile> findByAppUser(AppUser appUser);
 }

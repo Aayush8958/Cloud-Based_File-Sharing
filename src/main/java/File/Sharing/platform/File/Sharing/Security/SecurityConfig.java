@@ -21,7 +21,9 @@ public SecurityFilterChain securityFilterChain(HttpSecurity http)throws Exceptio
                     session.
                             sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             ).authorizeHttpRequests(auth -> auth.requestMatchers(
-                    "/register","/login").permitAll().anyRequest().authenticated()
+                    "/register","/login","/share/code/**",
+                    "/share/link/**",
+                    "/share/qr/**").permitAll().anyRequest().authenticated()
             ).addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 return http.build();
 }
