@@ -23,42 +23,42 @@ public class ShareService {
 
     public Share createShare(Long fid, AppUser appUser) {
 
-        // Find file
         MFile file = mFileRepository.findById(fid)
-                .orElseThrow(() -> new RuntimeException("File not found"));
+                .orElseThrow(() ->
+                        new RuntimeException("File not found"));
 
-        // Check ownership
         if (!file.getAppUser().getId().equals(appUser.getId())) {
-            throw new RuntimeException("You do not have permission to share this file");
+            throw new RuntimeException(
+                    "You do not have permission to share this file");
         }
 
-        // Check existing share
-        Optional<Share> existingShare = shareRepository.findByMFile(file);
+        Optional<Share> existingShare =
+                shareRepository.findByMFile(file);
 
         if (existingShare.isPresent()) {
 
             Share share = existingShare.get();
 
-            // Existing share is still valid
-            if (share.isActive() &&
-                    share.getExpiresAt().isAfter(LocalDateTime.now())) {
+            if (share.isActive()
+                    && share.getExpiresAt()
+                    .isAfter(LocalDateTime.now())) {
 
                 return share;
             }
 
-            // Existing share has expired
             share.setActive(false);
             shareRepository.save(share);
         }
 
-        // Create new share
         Share share = new Share();
 
         share.setShareCode(generateShareCode());
         share.setShareToken(UUID.randomUUID().toString());
 
-        share.setCreatedAt(LocalDateTime.now());
-        share.setExpiresAt(LocalDateTime.now().plusHours(1));
+        LocalDateTime now = LocalDateTime.now();
+
+        share.setCreatedAt(now);
+        share.setExpiresAt(now.plusHours(1));
 
         share.setDownloadCount(0);
         share.setActive(true);
@@ -70,61 +70,64 @@ public class ShareService {
 
     private String generateShareCode() {
 
-        String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        String characters =
+                "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
         StringBuilder code = new StringBuilder();
 
         for (int i = 0; i < 6; i++) {
-            int index = (int) (Math.random() * characters.length());
+
+            int index =
+                    (int) (Math.random() * characters.length());
+
             code.append(characters.charAt(index));
         }
 
         return code.toString();
     }
-    public MFile getFileByCode(String shareCode) {
 
-        Share share = shareRepository.findByShareCode(shareCode)
-                .orElseThrow(() -> new RuntimeException("Invalid share code"));
-
-        // Check if share is active
-        if (!share.isActive()) {
-            throw new RuntimeException("This share is no longer active");
-        }
-
-        // Check expiry
-        if (share.getExpiresAt().isBefore(LocalDateTime.now())) {
-
-            share.setActive(false);
-            shareRepository.save(share);
-
-            throw new RuntimeException("This share link has expired");
-        }
-
-        // Increase download count
-        share.setDownloadCount(share.getDownloadCount() + 1);
-        shareRepository.save(share);
-
-        return share.getMFile();
-    }
     public Share getValidShareByCode(String shareCode) {
 
-        Share share = shareRepository.findByShareCode(shareCode)
-                .orElseThrow(() -> new RuntimeException("Invalid share code"));
+        Share share = shareRepository
+                .findByShareCode(shareCode)
+                .orElseThrow(() ->
+                        new RuntimeException("Invalid share code"));
 
-        if (!share.isActive()) {
-            throw new RuntimeException("This share is no longer active");
-        }
-
-        if (share.getExpiresAt().isBefore(LocalDateTime.now())) {
-
-            share.setActive(false);
-            shareRepository.save(share);
-
-            throw new RuntimeException("This share link has expired");
-        }
+        validateShare(share);
 
         return share;
     }
+
+    public Share getValidShareByToken(String shareToken) {
+
+        Share share = shareRepository
+                .findByShareToken(shareToken)
+                .orElseThrow(() ->
+                        new RuntimeException("Invalid share link"));
+
+        validateShare(share);
+
+        return share;
+    }
+
+    private void validateShare(Share share) {
+
+        if (!share.isActive()) {
+            throw new RuntimeException(
+                    "This share is no longer active");
+        }
+
+        if (share.getExpiresAt()
+                .isBefore(LocalDateTime.now())) {
+
+            share.setActive(false);
+            shareRepository.save(share);
+
+            throw new RuntimeException(
+                    "This share link has expired");
+        }
+    }
+
     public void incrementDownloadCount(Share share) {
 
         share.setDownloadCount(
@@ -133,24 +136,4 @@ public class ShareService {
 
         shareRepository.save(share);
     }
-    public Share getValidShareByToken(String shareToken) {
-
-        Share share = shareRepository.findByShareToken(shareToken)
-                .orElseThrow(() -> new RuntimeException("Invalid share link"));
-
-        if (!share.isActive()) {
-            throw new RuntimeException("This share is no longer active");
-        }
-
-        if (share.getExpiresAt().isBefore(LocalDateTime.now())) {
-
-            share.setActive(false);
-            shareRepository.save(share);
-
-            throw new RuntimeException("This share link has expired");
-        }
-
-        return share;
-    }
-
 }

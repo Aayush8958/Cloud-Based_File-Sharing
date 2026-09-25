@@ -3,6 +3,7 @@ package File.Sharing.platform.File.Sharing.Share;
 import File.Sharing.platform.File.Sharing.AppUser.AppUser;
 import File.Sharing.platform.File.Sharing.AppUser.UserService;
 import File.Sharing.platform.File.Sharing.MFile.MFile;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import File.Sharing.platform.File.Sharing.MFile.MFile;
@@ -25,7 +26,8 @@ public class ShareController {
         this.storageService = storageService;
         this.qrCodeService = qrCodeService;
     }
-
+    @Value("${app.base-url}")
+    private String baseUrl;
 
 
     @PostMapping("/{fid}")
@@ -42,11 +44,11 @@ public class ShareController {
                 shareService.createShare(fid, appUser);
 
         String shareLink =
-                "http://192.168.1.14:9090/share/link/"
+                baseUrl + "/share/link/"
                         + share.getShareToken();
 
         String qrCodeUrl =
-                "http://192.168.1.14:9090/share/qr/"
+                baseUrl + "/share/qr/"
                         + share.getShareToken();
 
         ShareResponse response = new ShareResponse();
@@ -117,9 +119,8 @@ public class ShareController {
                 shareService.getValidShareByToken(shareToken);
 
         String shareLink =
-                "http://192.168.1.14:9090/share/link/"
+                baseUrl + "/share/link/"
                         + share.getShareToken();
-
         byte[] qrCode =
                 qrCodeService.generateQRCode(
                         shareLink,

@@ -54,12 +54,12 @@ src
 * [x] JWT Authentication
 * [x] File upload
 * [x] File download
-* [ ] File sharing
-* [ ] QR code generation
-* [ ] Link expiration
-* [ ] Amazon S3 integration
-* [ ] Amazon RDS migration
-* [ ] Deploy on Amazon EC2
+* [X] File sharing
+* [X] QR code generation
+* [X] Link expiration
+* [X] Amazon S3 integration
+* [X] Amazon RDS migration
+* [X] Deploy on Amazon EC2
 
 ## Notes
 

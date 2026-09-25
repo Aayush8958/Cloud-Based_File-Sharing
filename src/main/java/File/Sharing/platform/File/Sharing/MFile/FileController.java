@@ -9,7 +9,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import java.util.*;
+
+import java.util.List;
+
 @RestController
 @RequestMapping("/files")
 public class FileController {
@@ -17,46 +19,44 @@ public class FileController {
     private final FileService mFileService;
     private final UserService appUserService;
 
-    public FileController(
-            FileService mFileService,
-            UserService appUserService) {
+    public FileController(FileService mFileService,
+                          UserService appUserService) {
         this.mFileService = mFileService;
         this.appUserService = appUserService;
     }
 
     @PostMapping("/upload")
-    public ResponseEntity<MFile> upload(
+    public ResponseEntity<FileResponse> upload(
             @RequestParam("file") MultipartFile file,
             Authentication authentication) {
 
-        String email =
-                authentication.getName();
+        String email = authentication.getName();
 
         AppUser appUser =
                 appUserService.getUserByEmail(email);
 
         MFile mFile =
-                mFileService.upload(
-                        file,
-                        appUser
-                );
+                mFileService.upload(file, appUser);
 
-        return ResponseEntity.ok(mFile);
+        return ResponseEntity.ok(toResponse(mFile));
     }
 
     @GetMapping
-    public ResponseEntity<List<MFile>> getMyFiles(
+    public ResponseEntity<List<FileResponse>> getMyFiles(
             Authentication authentication) {
 
-        String email =
-                authentication.getName();
+        String email = authentication.getName();
 
         AppUser appUser =
                 appUserService.getUserByEmail(email);
 
-        return ResponseEntity.ok(
+        List<FileResponse> files =
                 mFileService.getUserFiles(appUser)
-        );
+                        .stream()
+                        .map(this::toResponse)
+                        .toList();
+
+        return ResponseEntity.ok(files);
     }
 
     @GetMapping("/{fid}/download")
@@ -64,8 +64,7 @@ public class FileController {
             @PathVariable Long fid,
             Authentication authentication) {
 
-        String email =
-                authentication.getName();
+        String email = authentication.getName();
 
         AppUser appUser =
                 appUserService.getUserByEmail(email);
@@ -74,22 +73,14 @@ public class FileController {
                 mFileService.getFile(fid);
 
         Resource resource =
-                mFileService.download(
-                        fid,
-                        appUser
-                );
+                mFileService.download(fid, appUser);
 
         MediaType mediaType;
 
         try {
-
             mediaType =
-                    MediaType.parseMediaType(
-                            mFile.getType()
-                    );
-
+                    MediaType.parseMediaType(mFile.getType());
         } catch (Exception e) {
-
             mediaType =
                     MediaType.APPLICATION_OCTET_STREAM;
         }
@@ -110,19 +101,35 @@ public class FileController {
             @PathVariable Long fid,
             Authentication authentication) {
 
-        String email =
-                authentication.getName();
+        String email = authentication.getName();
 
         AppUser appUser =
                 appUserService.getUserByEmail(email);
 
-        mFileService.delete(
-                fid,
-                appUser
-        );
+        mFileService.delete(fid, appUser);
 
         return ResponseEntity.ok(
                 "File deleted successfully"
         );
+    }
+
+    private FileResponse toResponse(MFile mFile) {
+
+        FileResponse response = new FileResponse();
+
+        response.setFid(mFile.getFid());
+        response.setOriginalFileName(
+                mFile.getOriginalFileName()
+        );
+        response.setType(mFile.getType());
+        response.setSize(mFile.getSize());
+        response.setUploadTime(
+                mFile.getUploadTime()
+        );
+        response.setStorageFileName(
+                mFile.getStorageFileName()
+        );
+
+        return response;
     }
 }
